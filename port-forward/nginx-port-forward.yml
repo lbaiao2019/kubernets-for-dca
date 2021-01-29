@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+
+
+# kubectl apply -f port-forward/nginx-port-forward.yml 
+# kubectl get pods
+# kubectl port-forward pod/nginx-deployment-6b474476c4-8xsxl 8080:80
+# kubectl get deployments
+# kubectl port-forward deployment/nginx-deployment 8080:80
+# kubectl delete deployments --all

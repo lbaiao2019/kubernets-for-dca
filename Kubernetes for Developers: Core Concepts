@@ -1,0 +1,536 @@
+- Kubernetes: Core Concepts
+Pluralsight - Kubernetes for Developers: Core Concepts + compilation of material and understanding.
+https://github.com/kubernetes/examples
+
+- Kubernetes (K8s) 
+    Kubernetes (K8s) is an open-source system for automating de$ployments, scanling, and managment of containerized applications.
+
+    - Key Kubernetes Benefits
+
+    -- Orchestrate Containers
+    -- Zero-Downtime
+    -- Self-Healing
+    -- Scale Containers
+
+    - Getting started with kubectl
+
+    $ kubectl version
+    Kubernetes version
+
+    $ kubectl cluster-info
+    View cluster information
+
+    $ kubectl get all
+    Retrieve information about Kubernetes Pods, Deployments, Services, and more
+
+    $ kubectl run [container-name] --image=[image-name]
+    Simple way to create a Deployment for a Pod
+
+    $ kubectl port-forward [pod] [ports]
+    Forward a port to allow external access
+
+    $ kubectl expose
+    Exporse a port for a Deployment/Pod
+
+    $ kubectl create [resource]
+    Create a resource
+
+    $ kubectl apply [resource]
+    Create or modify a resource
+
+- Kubernetes Installation
+    There are multiple ways to get started with fully functional Kubernetes environment
+    1. Use the Managed Kubernetes Service
+    is a tool that makes it easy to run Kubernetes locally
+    2. Use Minikube
+    3. Install & configure Kubernetes Manually (Hard way)
+
+- Steps to enable the  UI Dashboard
+
+    $ kubectl apply [yaml-url]
+    $ kubectl describe secret -n kube-system
+    - Locale the Kubernetes.io/service-account-token and copy the token
+    $ kubectl proxy
+    - Visit the dashboard URl and login using the token
+    https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
+
+    token:
+    eyJhbGciOiJSUzI1NiIsImtpZCI6ImN3REdpcTlhei1QZ2ZscFBFUGozaVFid0NRVTBmbkkzTjUteWxOMUNfX2MifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJ2cG5raXQtY29udHJvbGxlci10b2tlbi05dnd3NCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJ2cG5raXQtY29udHJvbGxlciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6Ijc1OGNmZTYzLTJkZjQtNGZkZC1iZjJhLTc5ZDE4YWQ4OTk5YSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTp2cG5raXQtY29udHJvbGxlciJ9.L2HVub9amV-pa7UJT9SrtlMu2tTVxK1z63eG4Kpi9E805uH5pWjnnn4oXNHzdSOXfvP7W1I2RqUyqapsLuGBAsstFqvyaKkzTeJd8y75HmJv5T2CkQ-OQE9aFw-EzaMlfhdl9GQUTTL1H0shMdo_l7UHjyCh36YNRbpF-KwDLMD4kF1E4dSLleb_iIbloURL8drDdafvOKcN_G284kPPzSkBZByY1bwdb7o68V6UQMabLW6LnJagZnaiFcFEjRi-Pi7Z3Hee0JEYPlJCcpNxZgvBbrenJLWnM7g1MEXoOSCUYFSlDkHK5XVwerW7Y7fSYypni_oxOxw5aE4zhShH-w
+
+    call the page and informe the token
+    http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+- Pods Core Concepts
+
+    A Pod (as in a pod of whales or pea pod) is a group of one or more containers, with shared storage/network resources, and a specification for how to run the containers. A Pod's contents are always co-located and co-scheduled, and run in a shared context.
+
+    The shared context of a Pod is a set of Linux namespaces, cgroups, and potentially other facets of isolation - the same things that isolate a Docker container. Within a Pod's context, the individual applications may have further sub-isolations applied.
+
+    In terms of Docker concepts, a Pod is similar to a group of Docker containers with shared namespaces and shared filesystem volumes.
+
+    Pod are "mortal" and may only live a short time (ephemeral)
+
+    Pod can be horizontally scaled so each Pod gets its own IP address.
+
+    A Pod gets an IP address after it has been scheduled (no way for clients to know IP ahead of time)
+
+    . Pod container share the same Network namespace (Share IP/port)
+    . Pod conteiner have the same loopback network interface (localhost)
+    . Container processes need to bind to different ports within a Pod
+    . Ports can be reused by containers in separate Pods
+
+    - Dealing with Tightly Coupled application
+        Containers within a Pod share an IP address and port space and can find each other via localhost.
+
+    - Node and Pods
+        Pods do not span nodes
+
+        - There are several different ways to schedule a Pod:
+        $ kubectl run command
+        $ kubectl create/apply command with yaml 
+
+        $ kubectl run mynginx --image=nginx:alpine
+        Run the nginx:alpine container in a Pod.
+
+        $ kubectl port-forward my-nginx 8080:80
+        Enable Pod container to be called externally
+
+        $ kubectl delete pods mynginx
+        Delete the Pod
+
+        $ kubectl delete deployment [name-of-deployment]
+        Delete Deployment that menager the Pod
+
+        $ kubectl get pods
+        get pods
+
+        $ kubectl get pods --output=wide
+        Get information with IP and Node 
+
+        $ kubectl get all
+        List all resources
+
+        $ kubectl delete pods --all
+        delete all pods
+
+        $ kubectl describe pod my-nginx
+        similare the inspect
+
+    - Pod Health
+        Kubernetes relies on Probles to determine the health of a Pod container
+        A Probe is a diagnostic performed periodically by the kubelet on a container.
+
+        - Types of Probes 
+            https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+            Liveness Probe 
+                can be used to determine if a Pod is healthy and running as expected.
+                When should a container restart?
+                * Identify an issue and stop the container.
+                The kubelet uses liveness probes to know when to restart a container
+                Restarting a container in such a state can help to make the application more available despite bugs.
+
+            Readiness Probe
+                can be used to determine if a Pod should receive requests
+                When should a container start receiving traffic?
+                * Identify when the container can receive traffic.
+                The kubelet uses readiness probes to know when a container is ready to start accepting traffic. A Pod is considered ready when all of its containers are ready.
+                Failed Pod containers are recreated by default (restartPolicy defaults to Always)  
+
+            Probles can have the following results:
+            - Success
+            - Failure
+            - Unknown 
+
+            - Types of Probles
+                There are 3 types of probles which can be used with Liveness
+                1. HTTP
+                2. Command
+                3. TCP            
+
+- Deployments/ReplicaSet
+    https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+    Path: deployment/*
+    
+    - Deployment
+        - ReplicaSet
+            - Pod
+                - Container 
+
+    A Deployments is a declarative way to manage Pods using a ReplicaSet
+    Deployments and ReplicaSets ensure Pods stay running and can be used to scale Pods.
+    - Pods are managed using ReplicaSets
+    - Scales ReplicaSets, which scale Pods
+    - Supports zero-downtime updates by creating and destroying ReplicaSets
+    - Provides rollback functionality
+    - Creates a unique label that is assigned to the ReplicaSet and generatedPods.
+
+    A ReplicaSet is a declarative way to manage Pods
+    ReplicaSets act as a Pod controller
+    - self-healing mechanism
+    - Ensure the requested number of Pods are available
+    - Provide fault-tolerance
+    - Can be used to scale Pods
+    - Relies on a Pod template
+    - No need to create Pods directly
+    - Used by Deployments
+
+    You must specify an appropriate selector and Pod template labels in a Deployment (in this case, app: nginx).
+    Do not overlap labels or selectors with other controllers (including other Deployments and StatefulSets). Kubernetes doesn't stop you from overlapping, and if multiple controllers have overlapping selectors those controllers might conflict and behave unexpectedly.
+
+    * When you updating a deployment, the Kubernetes will create a new ReplicaSet and after all Pods of the new ReplicaSet is ready, it will remove the Pods from the old ReplicaSet
+    * If you delete one Pods, the ReplicaSet will create a new one to guarantee the configuration in Deployment
+    * Use the 'kubectl rollout status' to see the new deployment working
+
+    Deployment ensures that only a certain number of Pods are down while they are being updated. By default, it ensures that at least 75% of the desired number of Pods are up (25% max unavailable).
+
+    1. maxSurge - Maximum number of PODS that can be scheduled above orginal number of pods.
+    2. maxUnavailable - Maximum number of PODS that can be unavailable during the update.
+
+    Deployment also ensures that only a certain number of Pods are created above the desired number of Pods. By default, it ensures that at most 125% of the desired number of Pods are up (25% max surge).
+
+    if you look at the above Deployment closely, you will see that it first created a new Pod, then deleted some old Pods, and created new ones. It does not kill old Pods until a sufficient number of new Pods have come up, and does not create new Pods until a sufficient number of old Pods have been killed. It makes sure that at least 2 Pods are available and that at max 4 Pods in total are available.
+
+    Note: In API version apps/v1, a Deployment's label selector is immutable after it gets created.
+
+    Sometimes, you may want to rollback a Deployment; for example, when the Deployment is not stable, such as crash looping. By default, all of the Deployment's rollout history is kept in the system so that you can rollback anytime you want (you can change that by modifying revision history limit).
+
+    * If you apply the update in your Deploy with '--record=true', a new RecordSet will be created, the rollout will happen, but in the old RecordSet will continue one Pod for a future Rolling Back. the old Pod will be with status 'ImagePullBackOff'
+
+    Note: The Deployment controller stops the bad rollout automatically, and stops scaling up the new ReplicaSet. This depends on the rollingUpdate parameters (maxUnavailable specifically) that you have specified. Kubernetes by default sets the value to 25%.
+
+    RollingUpdate Deployments support running multiple versions of an application at the same time. When you or an autoscaler scales a RollingUpdate Deployment that is in the middle of a rollout (either in progress or paused), the Deployment controller balances the additional replicas in the existing active ReplicaSets (ReplicaSets with Pods) in order to mitigate risk. This is called proportional scaling.
+    For example, you are running a Deployment with 10 replicas, maxSurge=3, and maxUnavailable=2.
+
+    * If you are running 'kubectl autoscale deployment.v1.apps/nginx-deployment --min=5 --max=10 --cpu-percent=80' and chenge your scale for 'kubectl scale deployment.v1.apps/nginx-deployment --replicas=1', the autoscale will adjust for 5.
+
+    - Progressing Deployment
+    Kubernetes marks a Deployment as progressing when one of the following tasks is performed:
+
+    The Deployment creates a new ReplicaSet during a new deploy.
+    The Deployment is scaling up its newest ReplicaSet.
+    The Deployment is scaling down its older ReplicaSet(s).
+    New Pods become ready or available (ready for at least MinReadySeconds).
+    You can monitor the progress for a Deployment by using kubectl rollout status.
+
+    - Failed Deployment
+        Your Deployment may get stuck trying to deploy its newest ReplicaSet without ever completing. This can occur due to some of the following factors:
+            Insufficient quota
+            Readiness probe failures
+            Image pull errors
+            Insufficient permissions
+            Limit ranges
+            Application runtime misconfiguration
+
+- DaemonSet
+    path: daemonset
+    https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/
+
+    A DaemonSet ensures that all (or some) Nodes run a copy of a Pod. As nodes are added to the cluster, Pods are added to them. As nodes are removed from the cluster, those Pods are garbage collected. Deleting a DaemonSet will clean up the Pods it created.
+
+    Some typical uses of a DaemonSet are:
+        running a cluster storage daemon on every node
+        running a logs collection daemon on every node
+        running a node monitoring daemon on every node
+
+    A DaemonSet ensures that all eligible nodes run a copy of a Pod. Normally, the node that a Pod runs on is selected by the Kubernetes scheduler.
+
+- StatefulSet
+    StatefulSet is the workload API object used to manage stateful applications.
+
+    Manages the deployment and scaling of a set of Pods, and provides guarantees about the ordering and uniqueness of these Pods.
+
+    StatefulSets are valuable for applications that require one or more of the following.
+
+    Stable, unique network identifiers.
+    Stable, persistent storage.
+    Ordered, graceful deployment and scaling.
+    Ordered, automated rolling updates.
+
+    - StatefulSet
+        - Service (clusterIP)
+            - Pods
+
+    Manages the deployment and scaling of a set of Pods, and provides guarantees about the ordering and uniqueness of these Pods. (Kubernetes definition)
+
+- Service
+    path: service/*
+
+    A Service provides a single poin t of entry for accessing one or more Pods.
+
+    - Service abstract Pod IP address from consumes.
+    - Load balances between Pods.
+    - Relies on labels to associate a Service with a Pod.
+    - Node's kube-proxy creates a Virtual IP for Services
+    - Layer 4 (TCP/UDP over IP)
+    - Services are not ephemeral
+    - Creates endpoints which sit between a Service and Pod.
+
+    * we should use labels to associate Pods with Services.
+
+    # Shell into a Pod and test a URL.
+    kubectl exec [pod-name] -- curl -s https://podIP
+
+    As many Services need to expose more than one port, Kubernetes supports multiple port definitions on a Service object. Each port definition can have the same protocol, or a different one.
+
+    - Services without selectors
+        Services most commonly abstract access to Kubernetes Pods, but they can also abstract other kinds of backends. For example:
+            - You want to have an external database cluster in production, but in your test environment you use your own databases.
+            - You want to point your Service to a Service in a different Namespace or on another cluster.
+            - You are migrating a workload to Kubernetes. While evaluating the approach, you run only a proportion of your backends in Kubernetes.
+
+        * you can define a Service without a Pod selector.
+        * Endpoint IP addresses cannot be the ClusterIPs of other Kubernetes Services, because kube-proxy doesn't support virtual IPs as a destination.
+
+    - Multi-Port Services
+        For some Services, you need to expose more than one port. Kubernetes lets you configure multiple port definitions on a Service object. When using multiple ports for a Service, you must give all of your ports names so that these are unambiguous. 
+
+    - Service Types
+        Kubernetes ServiceTypes allow you to specify what kind of Service you want. The default is ClusterIP.
+        Services can be defined in different ways:
+        - ClusterIP - Expose the service on a cluster-internal IP (default)
+        - NodePort - Expose the service on each Node's at a static port
+        - LoadBalancer - Provision an external IP to act as a load balancer for the service
+        - ExternalName - Maps a service to a DNS name
+
+    - ClusterIP
+        Service IP is exposed internally within the cluter
+        Only Pods within the cluster can talk to the Service
+        Allows Pods to talk other Pods.
+
+        scenario:
+            - Service (LoadBalance or ExternalName)
+                - Pod (Frontend)
+                    - Service (ClusterIP)
+                        - Pods (Backend)
+
+    - NodePort
+        Expose the service on each Node's IP at a statc port
+        Allocates a port from a range (default is 30000 - 32767)
+        Each Node proxies the allocated port
+
+        scenario:
+            - Service (NodePort - port 30100) 
+                - Pods
+
+    - LoadBalancer
+        Exposes a Service externally
+        Useful when combined with a cloud provider's load balancer.
+
+        scenario:
+            - Service (LoadBalancer)
+                - Service (NodePort - port 30105)
+                    - Pods
+                - Service (NodePort - port 30105)
+                    - Pods
+
+    - ExternalName
+        Service that acts as an alias for an external service
+        Allows a Service to act as the proxy for an external service
+        External services details are hidden from cluster (easier to change)
+
+        scenario:
+            - Service
+                - Pods
+                    - Service (ExternalName)
+                        - External Service
+
+    - Port Forwarding
+        * we use only in case debug model.
+        path: port-forward
+        Q. How can you access a Pod from outside of Kubernetes?
+        A. Port Forwarding
+
+        Use the kubeclt port-forward to forward a local port to a Pod port.
+
+        # Listen on port 8080 locally and forward to port 80 n Pod.
+        kubectl port-forward pod/[pod-name] 8080:80
+
+        # Listen on port 8080 locally and forward to Deployment's Pod
+        kubectl port-forward deployment/[deployment-name] 8080:80
+
+        # Listen port-forward service/[service-name] 8080:80
+        kubectl port-forward service/[deployment-name] 8080:80
+
+    - Ingress
+        You can also use Ingress to expose your Service. Ingress is not a Service type, but it acts as the entry point for your cluster. It lets you consolidate your routing rules into a single resource as it can expose multiple services under the same IP address.
+
+        Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster. Traffic routing is controlled by rules defined on the Ingress resource.
+        An Ingress does not expose arbitrary ports or protocols. Exposing services other than HTTP and HTTPS to the internet typically uses a service of type Service.Type=NodePort or Service.Type=LoadBalancer.
+
+    - Egress
+        Egress is the reverse of ingress traffic, which means outgoing traffic. The traffic from a pod to an external network endpoint outside the cluster is allowed if egress is allowed from the pod to that endpoint. In egress, all traffic is directed towards an external network and originated from inside the host network.
+
+- Labels and Selectors
+    Labels are key/value pairs that are attached to objects, such as pods. Labels are intended to be used to specify identifying attributes of objects that are meaningful and relevant to users, but do not directly imply semantics to the core system. Labels can be used to organize and to select subsets of objects. 
+
+    Unlike names and UIDs, labels do not provide uniqueness. In general, we expect many objects to carry the same label(s).
+
+    Via a label selector, the client/user can identify a set of objects. The label selector is the core grouping primitive in Kubernetes.
+
+    # basic command with labels
+    kubectl get pod --show-labels
+    kubectl get pods --all-namespaces -l app=nginx
+    get pods  -l app=nginx
+
+- configMap
+    ConfigMap provide a way to store configuration informaton and provide it to containers.
+    Provides a way to inject configuration data into a container.
+
+    Can store entire files or provide key/value pairs:
+        - Store in a File. Key is the filename, value is the file contents (can be JSON, XML, key/value, etc.)
+        - Provide on the command-line 
+        - ConfigMap manifest 
+
+    ConfigMaps can be accessed from a Pod using:
+        - Environment variables (key/value)
+        - ConfigMap volume (access as files)    
+
+    kubectl create configmap configmap-ex1 --from-file=configmap/configmap.txt 
+    create config map using the command line.
+
+    A ConfigMap can be create using kubectl create
+        # using the manifest
+        kubectl create -f configmap/configmap1.yaml 
+    key command-line switches include:
+        --from-file
+        --from-env-file
+        --from-literal
+
+    # Create a configmap using data from a config file
+    kubectl create configmap [cm-name] --from-file=[path]    
+
+    # Create a configmap from the env file
+    kubectl create configmap [cm-name] --from-env-file=[path]
+
+    # create a configmap from individual data values
+    kubectl create configmap [cm-name]
+    --from-literal=apiUrl=http://my-api
+    --from-literal=otherKey=othervalue
+
+- Secret
+    
+    - Avoids storing secrets in container images, in files, or in deployment manifest
+    - Mount secret into pods as files or as environment variables
+    - Kubernetes only makes secrets availables to Nodes that have a Pod requesting the secret 
+    - Secret are stored in tmpfs on a Node (Not on disk)
+
+    You can define and use your own Secret type by assigning a non-empty string as the type value for a Secret object. An empty string is treated as an Opaque type.
+
+    - Best Practice
+        - Enable encrypt at rest for cluster data 
+        - Limite access to etcd to only admin users.
+
+    >> kubectl create secret [TYPE][NAME][DATA]
+
+    types:
+    1. Generic:
+    2. Docker registry
+    3. TLS
+
+    >> kubectl create secret generic firstsecret --from-literal=dbpassword=mypassword123
+    Generating Secret Based on Generic - Literal Value
+
+    >>kubectl create secret generic secondsecret --from-file=./credentials.txt
+    Generating Secret Based on Generic - File
+
+    >> kubectl get secret firstsecret -o yaml
+    To View Secret from CLI
+
+    - Mounting Secrets in Containers
+    Once a secrets is created, it is necessary to make it available to containers in a  POD
+
+    There are two approaches to archives this:
+    1. Volumes
+    2. Environment variables
+
+- Storage
+
+    How do you store application state/data and exchange it between Pods with Kubernetes?
+    - Volumes (although other data storage options exist)
+
+    Kubernetes supports:
+    - Volumes
+    - PersistentVolumes
+    - PersistentVolumeClaims
+    - StorageClasses
+
+    - Volumes
+        - Volumes can be used to store state/data and use it in a Pod.
+        - A Pod can have multiple Volumes attached to it.
+        - Containers depend a mountPath to access a Volume.
+
+        - A Volume references a storage locatiion.
+        - Must have a unique name
+        - Attached to a Pod and may or may not be tied to the Pod's lifetime (depending on the volume type)
+        - A Volume Mount references a Volume by name and defines a mountPath
+
+        - Volumes Types:
+            - emptyDir
+                Empty directory for storing "transient" data (shares a Pod's lifetime) useful for sharing files between containers running in a Pod.
+                An emptyDir volume is first created when a Pod is assigned to a node, and exists as long as that Pod is running on that node. As the name says, the emptyDir volume is initially empty.
+
+            - hostPath
+                Pod mounts into the node's filesystem.
+                A hostPath volume mounts a file or directory from the host node's filesystem into your Pod. This is not something that most Pods will need, but it offers a powerful escape hatch for some applications.
+
+            - nfs 
+            An NFS (Network File System) share mounted into the Pod.
+
+- cloud volumes
+    Cloudter-wide-storage
+
+    Cloud providers support different types of volumes:
+        Azure: Azure Disk and Azuer File
+        Aws: Elastic Block Store
+            An awsElasticBlockStore volume mounts an Amazon Web Services (AWS) EBS volume into your pod. Unlike emptyDir, which is erased when a pod is removed, the contents of an EBS volume are persisted and the volume is unmounted. This means that an EBS volume can be pre-populated with data, and that data can be shared between pods.
+        GCP: GCE Persistent Disk
+
+    You can view a Pod's Volumes:
+        $ kubectl describe pod [pod-name]
+        $ kubectl get pod [pod-name] -o yaml
+
+- PersistentVolume (PV)
+    A PersistentVolume is a cluster-wide storage unit provisioned by an administrator with a lifecycle independent from a Pod.
+
+    - Pod
+        - PersistentVolumeClaims 
+            - PersistentVolume
+                - Storage (cloud provider, NFS, ect)
+
+
+        - PersistentVolumeClaims - linked for storageClassName (Ex. StorageClassName: local-storage)
+            - StorageClass - use the name.  (Ex. name: local-storage)
+                - PersistentVolume - linked for storageClassName (Ex. StorageClassName: local-storage)
+                    - Storage
+
+    - A PersistentVolume is a cluster-wide storage resources that relies on network-attached storage (NAS)
+    - Normally provisioned by a cluster administrator 
+    - Available to a Pod even if it gets rescheduled to a different Node.
+    - Rely on a storage provider such as NFS, cloud storage, or other options.
+    - Associated with a Pod by using a PersistentVolumeClaim (PVC)
+
+- StorageClass (SC)
+    A StorageClass is a type of storage template that can be used to dynamically provision storage.
+    Used to define different "classes" of storage
+    Act as a type of storage template.
+    Supports dynamic provisioning of PersistentVolumes.
+    Administrator don't have to create PVs in advance 
+
+- PersistentVolumeClaim (PVC)
+    A PersistentVolumeClaim is a request for storage unit (PV)
+    Provides Pods with a more resistent storage option that is abstracted from the details.
+
+- Network
+     https://k21academy.com/docker-kubernetes/kubernetes-networking/
+
+    Kubernetes imposes the followig fundamental requirements on any networking implementation
+    1. pods on a node can communicate with all pods on all nodes without NAT.
+    2. all Nodes can communicate with all Pods without NAT.
+    3. the IP that a Pod sees itself as is the same IP that others see  it as.
+
+    There are 4 different networking challenges thats needs to be solve:
+    1. Container-to-Container networking
+    2. Pod-to-Pod Networking 
+    3. Pod-to-service Networking
+    4. Internet-to-Service Networking
+

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: nginx
+  type: ClusterIP
+  ports:
+  - name: nginx
+    port: 8080
+    targetPort: 80
+
+# kubectl apply -f service/nginx-service.yaml 
+# kubectl get services
+# kubectl get pods
+# kubectl exec -it my-nginx  sh
+# curl 10.109.118.37:8080 -- IP service
+# kubectl get service
+# kubectl delete service/my-service

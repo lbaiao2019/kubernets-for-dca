@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  my-nginx
+  labels:
+    app: my-nginx
+spec:
+  selector:
+    matchLabels:
+      app: my-nginx
+  template:
+    metadata:
+      labels:
+        app:  my-nginx
+    spec:
+      containers:
+      - name:  my-nginx
+        image:  nginx:alpine
+        ports:
+        - containerPort:  80
+          name:  my-nginx
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+
+
+# kubectl get all
+# kubectl create -f deployment/nginx-deployment2.yaml --save-config
+# kubectl get deployment
+# kubectl get pods
+# kubectl describe deployment my-nginx
+# kubectl get deploy
+# kubectl scale -f deployment/nginx-deployment2.yaml --replicas=4
+# kubectl get all
+# kubectl delete deploy my-nginx

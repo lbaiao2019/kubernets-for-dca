@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: nginx
+  type: LoadBalancer
+  ports:
+  - name: nginx
+    port: 80 # port service
+    targetPort: 80 # port pod
+
+# kubectl apply -f service/nginx-nodeport.yaml 
+# kubectl get services
+# kubectl get pods
+# kubectl exec -it my-nginx  sh
+# kubectl exec -it my-nginx -- curl http://10.97.62.85:80 -- IP service
+# kubectl get service -- pay attention in external-ip
+# open your browse, localhost:80 
+# kubectl delete service/my-service

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: my-nginx
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      name: nginx
+  template:
+    metadata:
+      labels:
+        name: nginx
+    spec:
+      containers:
+      - name: my-nginx
+        image: busybox
+
+
+# kubectl apply -f port-forward/nginx.pod.yml 
+# kubectl get pods
+# kubectl get daemonset
+# kubectl delete -f daemonset/daemonset.yaml 
+# kubetl get all

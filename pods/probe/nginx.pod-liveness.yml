@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-nginx
+  labels:
+    app: nginx
+    rel: stable  
+spec:
+  containers:
+  - name: my-nginx
+    image: nginx:alpine
+    ports:
+      - containerPort: 80
+    livenessProbe:
+      httpGet:
+        path: /index.html
+        port: 80
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+      failureThreshold: 1
+    readinessProbe:
+      httpGet:
+        path: /index.html
+        port: 80
+      initialDelaySeconds: 3
+      periodSeconds: 5 
+      failureThreshold: 1
+
+
+# kubectl apply -f probe/nginx.pod-liveness.yml
+# kubectl get pod my-nginx
+# kubectl describe pod my-nginx
+# kubectl exec my-nginx -it sh - Access the application and remove the index.html file in /usr/share/nginx/html 
+# kubectl describe pod/my-nginx
+# kubectl logs pod/my-nginx
+# kubectl exec my-nginx -- rm -fr /usr/share/nginx/html/index.*
+# kubectl describe pod my-nginx
+# kubectl delete -f probe/nginx.pod-liveness.yml
